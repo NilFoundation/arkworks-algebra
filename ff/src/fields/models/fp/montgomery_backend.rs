@@ -600,7 +600,7 @@ macro_rules! MontFp {
 #[cfg(feature = "zkllvm")]
 macro_rules! MontFp {
     ($c0:expr) => {{
-        $crate::ark_ff_macros::to_field_literal!($c0)
+        $crate::ark_ff_macros::to_field_literal!($c0).into()
     }};
 }
 
