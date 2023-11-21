@@ -8,7 +8,9 @@
 #![forbid(unsafe_code)]
 
 use num_bigint::BigUint;
-use proc_macro::{Literal, TokenStream, TokenTree};
+use proc_macro::TokenStream;
+#[cfg(feature = "zkllvm")]
+use proc_macro::{Literal, TokenTree};
 use syn::{Expr, Item, ItemFn, Lit};
 
 mod montgomery;
