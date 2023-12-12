@@ -9,6 +9,8 @@
 #![allow(clippy::op_ref, clippy::suspicious_op_assign_impl)]
 #![deny(unsafe_code)]
 #![doc = include_str!("../README.md")]
+#![cfg_attr(feature = "zkllvm", feature(const_trait_impl))]
+#![cfg_attr(feature = "zkllvm", feature(effects))]
 
 #[macro_use]
 extern crate ark_std;

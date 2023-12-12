@@ -596,11 +596,52 @@ macro_rules! MontFp {
     }};
 }
 
+/// This trait is only used to const convert field literals to their newtypes.
+///
+/// This is a constant analogue of `Into<T>`. We need it since const traits are not yet stable in
+/// Rust and `const_convert` feature has been removed from nightly.
+#[cfg(feature = "zkllvm")]
+#[const_trait]
+pub trait FromFieldConst<T> {
+    fn from_field_const(lit: T) -> Self;
+}
+
+/// Construct a [`Fp<MontBackend<T, N>, N>`] element from a literal string. This
+/// should be used primarily for constructing constant field elements; in a
+/// non-const context, [`Fp::from_str`](`ark_std::str::FromStr::from_str`) is
+/// preferable.
+///
+/// **If the feature `zkllvm` enabled, crate `ark-ff` must be available to import with its name.**
+///
+/// # Panics
+///
+/// If the integer represented by the string cannot fit in the number
+/// of limbs of the `Fp`, this macro results in a
+/// * compile-time error if used in a const context
+/// * run-time error otherwise.
+///
+/// # Usage
+///
+/// ```rust
+/// # use ark_test_curves::MontFp;
+/// # use ark_test_curves::bls12_381 as ark_bls12_381;
+/// # use ark_std::{One, str::FromStr};
+/// use ark_bls12_381::Fq;
+/// const ONE: Fq = MontFp!("1");
+/// const NEG_ONE: Fq = MontFp!("-1");
+///
+/// fn check_correctness() {
+///     assert_eq!(ONE, Fq::one());
+///     assert_eq!(Fq::from_str("1").unwrap(), ONE);
+///     assert_eq!(NEG_ONE, -Fq::one());
+/// }
+/// ```
 #[macro_export]
 #[cfg(feature = "zkllvm")]
 macro_rules! MontFp {
     ($c0:expr) => {{
-        $crate::ark_ff_macros::to_field_literal!($c0).into()
+        use ark_ff::FromFieldConst;
+        FromFieldConst::from_field_const($crate::ark_ff_macros::to_field_literal!($c0))
     }};
 }
 
